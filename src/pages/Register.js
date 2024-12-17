@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from 'react';
 import { Form, Button } from 'react-bootstrap';
-import { Navigate, useNavigate } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
+// import Swal from 'sweetalert2';
 import { Notyf } from 'notyf';
 import UserContext from '../UserContext';
 
@@ -8,7 +9,6 @@ export default function Register() {
 
 	const {user} = useContext(UserContext);
 	const notyf = new Notyf();
-	const navigate = useNavigate();
 
 	const [email,setEmail] = useState("");
 	const [password,setPassword] = useState("");
@@ -20,7 +20,8 @@ export default function Register() {
 		// Prevents page redirection via form submission
 		e.preventDefault();
 
-		fetch('https://movieapp-api-lms1.onrender.com/users/register',{
+		// fetch('http://localhost:4000/users/register',{
+		fetch('https://fitnessapp-api-ln8u.onrender.com/users/register',{
 
             method: 'POST',
             headers: {
@@ -33,20 +34,29 @@ export default function Register() {
 		})
 		.then(res => res.json())
 		.then(data => {
-
+console.log(data);
 			if(data.message === "Registered Successfully"){
 
 				setEmail('');
 				setPassword('');
 				setConfirmPassword('');
 
+				// Swal.fire({
+	        	//     title: "Registration Successful",
+	        	//     icon: "success",
+	        	//     text: "Thank you for registering!"
+	        	// });
 				notyf.success("Registration successful!");
-				navigate("/login");
-			}else if(data.error === "Email invalid"){
-				notyf.error('Email is invalid');
+			// }else if(data.error === "Email invalid"){
+				// notyf.error('Email is invalid');
 			}else if(data.error === "Password must be atleast 8 characters"){
 				notyf.error("Password must be at least 8 characters");
 			}else {
+				// Swal.fire({
+		    	//     title: "Something went wrong.",
+		    	//     icon: "error",
+		    	//     text: "Please try again later or contact us for assistance"
+		    	// });
 				notyf.error("Something went wrong!");
 			}
 		})
@@ -64,7 +74,7 @@ export default function Register() {
 
 	return (
 		(user.id !== null) ?
-		    <Navigate to="/movies" />
+		    <Navigate to="/workouts" />
 		:			
 			<Form onSubmit={(e) => registerUser(e)}>
 			<h1 className="my-5 text-center">Register</h1>
@@ -100,14 +110,10 @@ export default function Register() {
 					onChange={e => setConfirmPassword(e.target.value)}/>
 				</Form.Group>
 				{
-					isActive ?
-						<div className="d-grid gap-2 mt-5">
-							<Button variant="primary" type="submit" className="mt-2">Submit</Button>
-						</div>
-					:
-						<div className="d-grid gap-2 mt-5">
-							<Button variant="primary" type="submit" className="mt-2" disabled>Submit</Button>
-						</div>
+					isActive
+
+					? <Button variant="primary" type="submit" className="mt-2">Submit</Button>
+					: <Button variant="primary" type="submit" className="mt-2" disabled>Submit</Button>
 				}
 			</Form>
 	)
